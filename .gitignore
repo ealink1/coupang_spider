@@ -1,0 +1,6 @@
+.idea/
+.DS_Store
+coupang_spider
+*.log
+logs/
+*.exe

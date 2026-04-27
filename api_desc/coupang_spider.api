@@ -1,0 +1,63 @@
+syntax = "v1"
+
+info(
+	title:   "coupang_spider"
+	desc:    "台湾地区便利店 / 物流 单号轨迹爬虫接口"
+	author:  "jay"
+	version: "v1"
+)
+
+// --------------- 通用结构 ---------------
+
+// 通用请求：追踪单号
+type TrackRequest {
+	TrackNo string `json:"trackNo"`
+}
+
+// 轨迹条目
+type TrackItem {
+	Time     string `json:"time"`
+	Status   string `json:"status"`
+	Location string `json:"location,omitempty"`
+}
+
+// 通用返回
+type TrackResponse {
+	TrackNo    string      `json:"trackNo"`
+	Carrier    string      `json:"carrier"`
+	StatusList []TrackItem `json:"statusList"`
+	Raw        string      `json:"raw,omitempty"`
+}
+
+// --------------- 服务路由 ---------------
+
+@server(
+	prefix: /api/v1/spider
+)
+service coupang_spider {
+	// 台湾 7-ELEVEN 交货便
+	@handler SevenTrackHandler
+	post /seven/track (TrackRequest) returns (TrackResponse)
+
+	// 台湾全家 FamilyMart
+	@handler FamilyMartTrackHandler
+	post /familymart/track (TrackRequest) returns (TrackResponse)
+
+	// 台湾莱尔富 Hi-Life
+	@handler HiLifeTrackHandler
+	post /hilife/track (TrackRequest) returns (TrackResponse)
+
+	// 台湾 OK 超商 OKMart
+	@handler OkMartTrackHandler
+	post /okmart/track (TrackRequest) returns (TrackResponse)
+
+	// 台湾嘉里大荣 Kerry
+	@handler KerryTrackHandler
+	post /kerry/track (TrackRequest) returns (TrackResponse)
+
+	// 台湾虾皮 SPX
+	@handler SpxTrackHandler
+	post /spx/track (TrackRequest) returns (TrackResponse)
+}
+
+// goctl api go -api coupang_spider.api -dir ../ --style=go_zero
