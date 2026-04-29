@@ -50,8 +50,8 @@ func (l *SpxTrackLogic) Track(req *types.TrackRequest) (*types.TrackResponse, er
 			}
 			items = append(items, types.TrackItem{
 				Time:     t,
-				Status:   firstNonEmpty(ev.Description, ev.Message, ev.Status),
-				Location: ev.Location,
+				Status:   ev.Status,
+				Location: ev.Message,
 			})
 		}
 	}

@@ -4,3 +4,4 @@ coupang_spider
 *.log
 logs/
 *.exe
+.claude

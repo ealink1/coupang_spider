@@ -49,8 +49,10 @@ func (c *SpxClient) QueryRaw(ctx context.Context, trackNo string) (string, error
 	q := url.Values{}
 	q.Set("sls_tracking_number", buildSpxSignedTrackingNo(trackNo, time.Now().Unix()))
 	headers := map[string]string{
-		"Accept":  "application/json, text/plain, */*",
-		"Referer": spxDetailURL + url.PathEscape(trackNo),
+		"Accept":          "application/json, text/plain, */*",
+		"Accept-Language": "zh-TW,zh;q=0.9,en;q=0.8",
+		"Cookie":          "fms_language=tw; app_lang=tw",
+		"Referer":         spxDetailURL + url.PathEscape(trackNo),
 	}
 	return c.base.DoGet(ctx, spxTrackingURL+"?"+q.Encode(), headers)
 }

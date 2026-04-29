@@ -1,6 +1,6 @@
 syntax = "v1"
 
-info(
+info (
 	title:   "coupang_spider"
 	desc:    "台湾地区便利店 / 物流 单号轨迹爬虫接口"
 	author:  "jay"
@@ -8,7 +8,6 @@ info(
 )
 
 // --------------- 通用结构 ---------------
-
 // 通用请求：追踪单号
 type TrackRequest {
 	TrackNo string `json:"trackNo"`
@@ -18,7 +17,7 @@ type TrackRequest {
 type TrackItem {
 	Time     string `json:"time"`
 	Status   string `json:"status"`
-	Location string `json:"location,omitempty"`
+	Location string `json:"location"`
 }
 
 // 通用返回
@@ -30,9 +29,8 @@ type TrackResponse {
 }
 
 // --------------- 服务路由 ---------------
-
-@server(
-	prefix: /api/v1/spider
+@server (
+	prefix: /api/spider/v1
 )
 service coupang_spider {
 	// 台湾 7-ELEVEN 交货便
@@ -40,15 +38,15 @@ service coupang_spider {
 	post /seven/track (TrackRequest) returns (TrackResponse)
 
 	// 台湾全家 FamilyMart
-	@handler FamilyMartTrackHandler
+	@handler FamilymartTrackHandler
 	post /familymart/track (TrackRequest) returns (TrackResponse)
 
 	// 台湾莱尔富 Hi-Life
-	@handler HiLifeTrackHandler
+	@handler HilifeTrackHandler
 	post /hilife/track (TrackRequest) returns (TrackResponse)
 
 	// 台湾 OK 超商 OKMart
-	@handler OkMartTrackHandler
+	@handler OkmartTrackHandler
 	post /okmart/track (TrackRequest) returns (TrackResponse)
 
 	// 台湾嘉里大荣 Kerry
