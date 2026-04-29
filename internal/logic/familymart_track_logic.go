@@ -3,6 +3,8 @@ package logic
 import (
 	"context"
 	"encoding/json"
+	"strings"
+	"time"
 
 	"coupang_spider/internal/pkg/spider"
 	"coupang_spider/internal/svc"
@@ -88,17 +90,40 @@ func parseFamilyMartJSONItems(raw string) []types.TrackItem {
 	for _, row := range detail.List {
 		// 日期和时间拆字段返回，这里拼成现有 TrackItem.Time。
 		item := types.TrackItem{
-			Time:     row.OrderDate + " " + row.OrderTime,
+			Time:     formatFamilyMartTime(row.OrderDate, row.OrderTime),
 			Status:   row.StatusD,
 			Location: row.ReceiveStore,
 		}
 		if item.Location == "" {
 			item.Location = row.ReceiveStoreAdr
 		}
-		if item.Time == " " && item.Status == "" {
+		if item.Time == "" && item.Status == "" {
 			continue
 		}
 		items = append(items, item)
 	}
 	return items
+}
+
+// formatFamilyMartTime 将全家日期时间统一格式化为 yyyy-MM-dd HH:mm:ss。
+func formatFamilyMartTime(orderDate, orderTime string) string {
+	// 全家返回日期与时间分离，先清理空白再组合解析。
+	raw := strings.TrimSpace(orderDate + " " + orderTime)
+	if raw == "" {
+		return ""
+	}
+	formats := []string{
+		"2006/01/02 15:04:05",
+		"2006/01/02 15:04",
+		"2006-01-02 15:04:05",
+		"2006-01-02 15:04",
+	}
+	for _, format := range formats {
+		// 兼容无秒与已有标准格式，统一输出秒级时间。
+		parsed, err := time.ParseInLocation(format, raw, time.Local)
+		if err == nil {
+			return parsed.Format("2006-01-02 15:04:05")
+		}
+	}
+	return raw
 }
